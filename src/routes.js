@@ -27,7 +27,7 @@ export const routes = [
       const { title, description } = req.body;
 
       if(!title || !description){
-        res.whiteHead(400).end(
+        res.writeHead(400).end(
           JSON.stringify({error: "Title and description are required."})
           )
           return
@@ -45,6 +45,33 @@ export const routes = [
       database.insert('tasks', newTask)
 
       res.writeHead(201).end(JSON.stringify(newTask));
+    }
+  },
+  {
+    method: "PUT",
+    path: buildRoutePath("/tasks/:id"),
+    handler: (req, res) => {
+      const { id } = req.params;
+      const { title, description } = req.body
+
+      const updatedTask = {
+        ...(title && { title }),
+        ...(description && {description}),
+        updated_at: new Date().toISOString()
+      }
+      
+
+      const success = database.update("tasks", id, updatedTask)
+
+      if(success) {
+        return res
+                .writeHead(200)
+                .end(JSON.stringify({ message: "Updated with success"}))
+      } else {
+        return res
+              .writeHead(404)
+              .end(JSON.stringify({ message: "Task not found."}))
+      }
     }
   }
 ]
