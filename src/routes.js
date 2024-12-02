@@ -26,15 +26,25 @@ export const routes = [
     handler: (req, res) => {
       const { title, description } = req.body;
 
-      const task = {
-        id: randomUUID(),
-        title: title,
-        description: description
+      if(!title || !description){
+        res.whiteHead(400).end(
+          JSON.stringify({error: "Title and description are required."})
+          )
+          return
       }
 
-      database.insert('tasks', task)
+      const newTask = {
+        id: randomUUID(),
+        title,
+        description,
+        completed_at: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
 
-      return res.end()
+      database.insert('tasks', newTask)
+
+      res.writeHead(201).end(JSON.stringify(newTask));
     }
   }
 ]
