@@ -102,5 +102,21 @@ export const routes = [
         return res.writeHead(200).end(JSON.stringify({ message: "Task Completed"}))
       }
     }
+  },
+  {
+    method: "DELETE",
+    path: buildRoutePath("/tasks/:id"),
+    handler: (req, res) => {
+      const { id } = req.params
+
+      const deletedTask = database.delete("tasks", id)
+
+      if(!deletedTask) {
+        res.writeHead(404).end(JSON.stringify({ error: "Task not found"}))
+        return
+      }
+
+      res.writeHead(200).end(JSON.stringify({ message: "Task deleted"}))
+    }
   }
 ]
